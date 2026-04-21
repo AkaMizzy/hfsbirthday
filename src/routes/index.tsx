@@ -4,6 +4,16 @@ import { TulipGarden } from "@/components/ui/TulipGarden";
 import { FinalMessage } from "@/components/ui/FinalMessage";
 import birthdayMusic from "@/assets/birthday.mp3";
 
+// Stickers — imported so Vite hashes and optimises them
+import stickerShy    from "@/assets/cuteStickers/shy.png";
+import stickerHeart  from "@/assets/cuteStickers/heart.png";
+import stickerLaugh  from "@/assets/cuteStickers/laugh.png";
+import stickerHuh    from "@/assets/cuteStickers/huh.png";
+import stickerCry    from "@/assets/cuteStickers/cry.png";
+import stickerSad    from "@/assets/cuteStickers/sad.png";
+import stickerShhh   from "@/assets/cuteStickers/shhh.png";
+import stickerIdk    from "@/assets/cuteStickers/idk.png";
+
 /* ---------- Global Audio Setup ---------- */
 // Initializing outside the component forces the browser to fetch the audio the instant this script parses,
 // rather than delaying the network request until after React finishes rendering.
@@ -184,6 +194,10 @@ function Hero() {
     <section className="relative min-h-screen sunset-bg flex flex-col items-center justify-center text-center px-6 overflow-hidden">
       <Bokeh />
 
+      {/* Sticker accents — corners only, never near text */}
+      <StickerAccent src={stickerShy}   size={90}  bottom="18%" left="2%"   rotate={-12} floatDelay={0}   />
+      <StickerAccent src={stickerHeart} size={70}  top="8%"     right="3%"  rotate={10}  floatDelay={1.4} className="hidden sm:block" />
+
       <div className="relative z-10 reveal">
         <p className="font-[family-name:var(--font-serif)] italic text-ocean-deep/80 tracking-[0.3em] uppercase text-xs md:text-sm mb-6">
           for my dearest Hafsa
@@ -218,7 +232,11 @@ function Hero() {
 function Gallery() {
   const rotations = ["-rotate-3", "rotate-2", "-rotate-1", "rotate-3", "-rotate-2", "rotate-1"];
   return (
-    <section className="relative py-28 px-6 bg-linen">
+    <section className="relative py-28 px-6 bg-linen overflow-hidden">
+      {/* Edge stickers — outside the photo grid */}
+      <StickerAccent src={stickerLaugh} size={88}  top="6%"  right="1%"  rotate={14}  floatDelay={0.6} className="hidden md:block" />
+      <StickerAccent src={stickerHuh}   size={72}  top="55%" left="0%"   rotate={-8}  floatDelay={2.1} className="hidden md:block" />
+
       <SectionTitle eyebrow="a few " title="Moments with You" />
       <div className="mt-16 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 reveal">
         {PHOTOS.map((p, i) => (
@@ -247,7 +265,11 @@ function Gallery() {
 
 function Memories() {
   return (
-    <section className="relative py-28 px-6 bg-gradient-to-b from-linen via-blush/20 to-linen">
+    <section className="relative py-28 px-6 bg-gradient-to-b from-linen via-blush/20 to-linen overflow-hidden">
+      {/* Emotionally resonant edge stickers */}
+      <StickerAccent src={stickerCry} size={80}  top="8%"   right="1%"  rotate={8}   floatDelay={0.3} className="hidden md:block" />
+      <StickerAccent src={stickerSad} size={68}  bottom="6%" left="1%"   rotate={-10} floatDelay={1.8} className="hidden md:block" />
+
       <SectionTitle eyebrow="small moments" title="Things I'd never want to forget" />
       <div className="mt-20 max-w-4xl mx-auto relative">
         {/* timeline line */}
@@ -294,7 +316,11 @@ function Letter() {
     "— with my whole heart 🌷",
   ];
   return (
-    <section className="relative py-28 px-6 bg-gradient-to-b from-linen to-ocean/10">
+    <section className="relative py-28 px-6 bg-gradient-to-b from-linen to-ocean/10 overflow-hidden">
+      {/* "Shhh, this is private" — peeking from the top-right */}
+      <StickerAccent src={stickerShhh} size={82} top="3%" right="2%" rotate={12} floatDelay={1.0} className="hidden sm:block" />
+      <StickerAccent src={stickerIdk}  size={64} bottom="4%" left="2%" rotate={-9} floatDelay={2.5} className="hidden md:block" />
+
       <SectionTitle eyebrow="A letter" title="Just For You" />
       <div className="mt-16 max-w-3xl mx-auto reveal">
         <div className="linen-paper rounded-sm p-10 md:p-16 relative" style={{ transform: "rotate(-0.4deg)" }}>
@@ -385,6 +411,42 @@ function Footer() {
 }
 
 /* ---------- Visual helpers ---------- */
+
+/**
+ * StickerAccent — places a decorative sticker at an absolute edge/corner position.
+ * Always pointer-events:none so it never blocks interaction.
+ * `floatDelay` offsets the animation so stickers don't all bob in sync.
+ */
+type StickerAccentProps = {
+  src: string;
+  size?: number;
+  top?: string; bottom?: string; left?: string; right?: string;
+  rotate?: number;
+  floatDelay?: number;
+  className?: string;
+};
+function StickerAccent({ src, size = 80, top, bottom, left, right, rotate = 0, floatDelay = 0, className = "" }: StickerAccentProps) {
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      draggable={false}
+      width={size}
+      height={size}
+      className={`absolute pointer-events-none select-none z-10 ${className}`}
+      style={{
+        top, bottom, left, right,
+        width: size,
+        height: size,
+        transform: `rotate(${rotate}deg)`,
+        animation: `sticker-float 6s ease-in-out ${floatDelay}s infinite`,
+        filter: "drop-shadow(0 4px 8px oklch(0 0 0 / 0.15))",
+        opacity: 0.92,
+      }}
+    />
+  );
+}
 
 function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (

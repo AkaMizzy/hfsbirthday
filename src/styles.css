@@ -157,6 +157,13 @@
   100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
 }
 
+@keyframes sticker-float {
+  0%   { transform: translateY(0)    scale(1)    rotate(var(--s-rot, 0deg)); }
+  35%  { transform: translateY(-7px) scale(1.03) rotate(calc(var(--s-rot, 0deg) + 2deg)); }
+  70%  { transform: translateY(-4px) scale(1.01) rotate(calc(var(--s-rot, 0deg) - 1deg)); }
+  100% { transform: translateY(0)    scale(1)    rotate(var(--s-rot, 0deg)); }
+}
+
 /* ===== Utilities ===== */
 .shimmer-text {
   background: linear-gradient(
