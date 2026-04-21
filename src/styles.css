@@ -164,6 +164,18 @@
   100% { transform: translateY(0)    scale(1)    rotate(var(--s-rot, 0deg)); }
 }
 
+/* Glasses carousel horizontal strip */
+.glasses-strip {
+  scroll-padding: 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+.glasses-strip::-webkit-scrollbar { height: 4px; }
+.glasses-strip::-webkit-scrollbar-track { background: transparent; }
+.glasses-strip::-webkit-scrollbar-thumb {
+  background: oklch(0.74 0.06 215 / 0.4);
+  border-radius: 99px;
+}
+
 /* ===== Utilities ===== */
 .shimmer-text {
   background: linear-gradient(

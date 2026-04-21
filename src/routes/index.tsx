@@ -14,6 +14,18 @@ import stickerSad    from "@/assets/cuteStickers/sad.png";
 import stickerShhh   from "@/assets/cuteStickers/shhh.png";
 import stickerIdk    from "@/assets/cuteStickers/idk.png";
 
+// Personal photos — intentionally curated, not a dump
+import imgHafsa        from "@/assets/images/hafsa.jpg";       // shy smile, red sweater → hero portrait
+import imgGuitar       from "@/assets/images/hfs_with_guitar.png"; // playing guitar
+import imgRedGuitar    from "@/assets/images/red_hfs.png";     // blocking cam with guitar
+import imgPout         from "@/assets/images/IMG_6445.jpg";    // hair over face pout
+import imgTilted       from "@/assets/images/IMG_6470.jpg";    // tilted close-up eyes
+import imgGlasses1     from "@/assets/images/IMG_6634.png";   // smoldering glasses over nose
+import imgGlasses2     from "@/assets/images/IMG_7286.jpg";   // cat-eye glasses, intense look
+import imgGlasses3     from "@/assets/images/IMG_6463.jpg";   // dog filter + big glasses
+import imgGlasses4     from "@/assets/images/hafsa1.png";     // glasses, pondering
+import imgCasual       from "@/assets/images/hfs1.png";       // guitar behind her, red jacket
+
 /* ---------- Global Audio Setup ---------- */
 // Initializing outside the component forces the browser to fetch the audio the instant this script parses,
 // rather than delaying the network request until after React finishes rendering.
@@ -55,10 +67,10 @@ const PHOTOS = [
 ];
 
 const MEMORIES = [
-  { date: "the day we met", text: "I knew, somehow, that you were going to be my person. The kind of friend you don't replace — only treasure." },
-  { date: "first long call", text: "We talked until the sun came up on your side and went down on mine. Time zones meant nothing." },
-  { date: "that one bad day", text: "You sent me a voice note that made me sob and laugh in the same breath. I still listen to it sometimes." },
-  { date: "your favorite song", text: "You sent it at 2am with no context. It became my favorite too. That's just how we work." },
+  { date: "the day we met", text: "I knew, somehow, that you were going to be my person. The kind of friend you don't replace." },
+  { date: "first long call", text: "What was supposed to be a simple call turned into hours of talking, and neither of us noticed how fast time slipped away." },
+  { date: "that one bad day", text: "The day I thought I had messed everything up and that we might stop talking, but you showed me that some things are stronger than one mistake." },
+  { date: "your favorite song `Reflections` ", text: "You sent it at 2am with no context. It became my favorite too." },
   { date: "the promise", text: "One day, the same ocean. The same sand. The same sunset. I'm counting down with you." },
   { date: "today", text: "Another year of you on this earth — the world is softer for it. I'm so glad you were born, Hafsa." },
 ];
@@ -178,11 +190,16 @@ function BirthdayPage() {
       />
 
       <Hero />
-      <Gallery />
+      <PhotoGallery />
+      <GuitarScene />
       <Memories />
       <Letter />
       <TulipGarden />
-      <FinalMessage />
+      <div className="relative overflow-hidden">
+        <StickerAccent src={stickerHeart} size={80}  top="6%"    right="3%"  rotate={12}  floatDelay={0.8} className="hidden sm:block" />
+        <StickerAccent src={stickerShy}   size={72}  bottom="8%" left="2%"   rotate={-10} floatDelay={2.0} />
+        <FinalMessage />
+      </div>
     </main>
   );
 }
@@ -193,6 +210,19 @@ function Hero() {
   return (
     <section className="relative min-h-screen sunset-bg flex flex-col items-center justify-center text-center px-6 overflow-hidden">
       <Bokeh />
+
+      {/* hafsa.jpg — faint portrait layer, low opacity so it doesn't fight the text */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-0 pointer-events-none"
+        style={{
+          backgroundImage: `url(${imgHafsa})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          opacity: 0.10,
+          mixBlendMode: "multiply",
+        }}
+      />
 
       {/* Sticker accents — corners only, never near text */}
       <StickerAccent src={stickerShy}   size={90}  bottom="18%" left="2%"   rotate={-12} floatDelay={0}   />
@@ -229,36 +259,117 @@ function Hero() {
   );
 }
 
-function Gallery() {
-  const rotations = ["-rotate-3", "rotate-2", "-rotate-1", "rotate-3", "-rotate-2", "rotate-1"];
+/* Photo Gallery — merged "The way I see you" + "Glasses era"
+   5 photos: 3 on top row, 2 centered on the second row.
+   All use the existing polaroid card design with captions. */
+function PhotoGallery() {
+  const row1 = [
+    { img: imgGlasses3, alt: "Hafsa dog-filter glasses selfie",  caption: "Z3ma rani cute hh",    rotate: -2  },
+    { img: imgCasual,   alt: "Hafsa in red jacket with guitar",  caption: "red era 🌹",                  rotate: 1.5 },
+    { img: imgGlasses2, alt: "Hafsa cat-eye glasses intense",    caption: "mystery character",         rotate: 1.5   },
+  ];
+  const row2 = [
+    { img: imgGlasses1, alt: "Hafsa smoldering over glasses",    caption: "the intensity model",         rotate: -2},
+    { img: imgPout,     alt: "Hafsa hair-over-face pout",        caption: "Hmm",          rotate: -1  },
+  ];
+
   return (
     <section className="relative py-28 px-6 bg-linen overflow-hidden">
-      {/* Edge stickers — outside the photo grid */}
-      <StickerAccent src={stickerLaugh} size={88}  top="6%"  right="1%"  rotate={14}  floatDelay={0.6} className="hidden md:block" />
-      <StickerAccent src={stickerHuh}   size={72}  top="55%" left="0%"   rotate={-8}  floatDelay={2.1} className="hidden md:block" />
+      <StickerAccent src={stickerLaugh} size={88} top="4%"  right="1%" rotate={14}  floatDelay={0.6} className="hidden md:block" />
+      <StickerAccent src={stickerHuh}   size={72} top="60%" left="0%" rotate={-8}  floatDelay={2.1} className="hidden md:block" />
 
-      <SectionTitle eyebrow="a few " title="Moments with You" />
-      <div className="mt-16 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 reveal">
-        {PHOTOS.map((p, i) => (
-          <div key={i} className={`polaroid relative ${rotations[i % rotations.length]}`}>
-            <div className="washi-tape -top-2 left-1/2 -translate-x-1/2 -rotate-3" />
-            <div className="aspect-[4/5] overflow-hidden bg-muted">
+      <SectionTitle eyebrow="a few frames of you" title="The way I see you" />
+
+      <div className="mt-16 max-w-5xl mx-auto reveal">
+
+        {/* Row 1 — 3 cards */}
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10">
+          {row1.map((p, i) => (
+            <div
+              key={i}
+              className="polaroid flex-shrink-0 w-52 md:w-64"
+              style={{ transform: `rotate(${p.rotate}deg)`, transitionDelay: `${i * 80}ms` }}
+            >
+              <div className="aspect-[3/4] overflow-hidden bg-muted">
+                <img src={p.img} alt={p.alt} loading="lazy" className="w-full h-full object-cover object-top" />
+              </div>
+              <p className="mt-3 text-center font-[family-name:var(--font-hand)] text-lg text-ink/80">{p.caption}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Row 2 — 2 cards, centered */}
+        <div className="flex flex-wrap justify-center gap-6 md:gap-10 mt-8 md:mt-10">
+          {row2.map((p, i) => (
+            <div
+              key={i}
+              className="polaroid flex-shrink-0 w-52 md:w-64"
+              style={{ transform: `rotate(${p.rotate}deg)`, transitionDelay: `${(i + 3) * 80}ms` }}
+            >
+              <div className="aspect-[3/4] overflow-hidden bg-muted">
+                <img src={p.img} alt={p.alt} loading="lazy" className="w-full h-full object-cover object-top" />
+              </div>
+              <p className="mt-3 text-center font-[family-name:var(--font-hand)] text-lg text-ink/80">{p.caption}</p>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+/* Guitar Scene — cinematic two-panel section. Tells the story of her and music. */
+function GuitarScene() {
+  return (
+    <section className="relative py-24 px-6 overflow-hidden bg-gradient-to-b from-linen via-blush/10 to-linen">
+      <SectionTitle eyebrow="she plays" title="Songs for herself" />
+
+      <div className="mt-14 max-w-5xl mx-auto reveal">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+
+          {/* Left: quiet moment playing */}
+          <div className="relative">
+            <div
+              className="rounded-2xl overflow-hidden shadow-[0_30px_60px_-20px_oklch(0.55_0.08_225/0.35)]"
+              style={{ transform: "rotate(-1.5deg)" }}
+            >
               <img
-                src={p.src}
-                alt={p.caption}
-                loading="lazy"
-                className="w-full h-full object-cover"
+                src={imgGuitar}
+                alt="Hafsa playing guitar"
+                className="w-full object-cover object-top"
+                style={{ maxHeight: 480 }}
               />
             </div>
-            <p className="mt-3 text-center font-[family-name:var(--font-hand)] text-xl text-ink/80">
-              {p.caption}
+            {/* Pull quote */}
+            <p
+              className="absolute -bottom-5 -right-4 md:-right-8 bg-gold/90 text-ink font-[family-name:var(--font-hand)] text-lg px-4 py-2 rounded shadow-md"
+              style={{ transform: "rotate(2deg)" }}
+            >
+              in her own world ♥
             </p>
           </div>
-        ))}
+
+          {/* Right: blocking the camera + copy */}
+          <div className="flex flex-col gap-8">
+            <div
+              className="rounded-2xl overflow-hidden shadow-[0_20px_40px_-15px_oklch(0.55_0.08_225/0.3)]"
+              style={{ transform: "rotate(1deg)" }}
+            >
+              <img
+                src={imgRedGuitar}
+                alt="Hafsa holding guitar, blocking camera"
+                className="w-full object-cover object-top"
+                style={{ maxHeight: 320 }}
+              />
+            </div>
+            <blockquote className="font-[family-name:var(--font-hand)] text-2xl md:text-3xl text-ink/75 leading-relaxed pl-4 border-l-2 border-gold">
+              There's something about the way she holds a guitar like she's been doing it her whole life. Quiet, certain, entirely her own.
+            </blockquote>
+          </div>
+
+        </div>
       </div>
-      <p className="mt-12 text-center text-sm italic text-muted-foreground">
-        (swap these with your own memories — just ask)
-      </p>
     </section>
   );
 }
@@ -307,13 +418,13 @@ function Letter() {
   const lines = [
     "My dearest Hafsa,",
     "There aren't enough words in any language for what you mean to me.",
-    "You are the kindest soul I know — soft where the world is sharp, warm where it is cold.",
+    "You are the kindest soul I know, soft where the world is sharp, warm where it is cold.",
     "Distance has tried to be loud, but our friendship has always been louder.",
-    "I hope this year is gentle with you. I hope it brings you everything you've quietly wished for.",
-    "And if it doesn't — I'll be right here, on the other end of this enormous, ridiculous ocean,",
+    "I hope this year is gentle with you. I hope it brings you everything you've quietly wished for. (chi 18 f bac 😉)",
+    "And if it doesn't, I'll be right here, on the other end of this enormous, ridiculous ocean,",
     "loving you anyway. Always anyway.",
-    "Happy birthday, my person.",
-    "— with my whole heart 🌷",
+    "Happy birthday, my person 🌷",
+    
   ];
   return (
     <section className="relative py-28 px-6 bg-gradient-to-b from-linen to-ocean/10 overflow-hidden">
