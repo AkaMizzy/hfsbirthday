@@ -1,5 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { TulipGarden } from "@/components/ui/TulipGarden";
+import { FinalMessage } from "@/components/ui/FinalMessage";
+import birthdayMusic from "@/assets/birthday.mp3";
+
+/* ---------- Global Audio Setup ---------- */
+// Initializing outside the component forces the browser to fetch the audio the instant this script parses,
+// rather than delaying the network request until after React finishes rendering.
+const birthdayAudio = typeof Audio !== "undefined" ? new Audio(birthdayMusic) : null;
+if (birthdayAudio) {
+  birthdayAudio.loop = true;
+  birthdayAudio.volume = 0.35;
+  birthdayAudio.preload = "auto";
+  birthdayAudio.addEventListener("ended", () => {
+    birthdayAudio.currentTime = 0;
+    birthdayAudio.play().catch(() => {});
+  });
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,13 +71,11 @@ const WISHES = [
 /* ---------- Component ---------- */
 
 function BirthdayPage() {
-  const [soundOn, setSoundOn] = useState(false);
   const [easterCount, setEasterCount] = useState(0);
   const [showSecret, setShowSecret] = useState(false);
   const [hearts, setHearts] = useState<number[]>([]);
   const [wishIndex, setWishIndex] = useState<number | null>(null);
   const [wishKey, setWishKey] = useState(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Scroll reveals
   useEffect(() => {
@@ -80,18 +95,23 @@ function BirthdayPage() {
     return () => io.disconnect();
   }, []);
 
-  // Ambient sound
+  // Auto-play birthday music: attempt immediately, unlock on first interaction if blocked
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(
-        "https://cdn.pixabay.com/audio/2022/03/15/audio_1aebd4c6f9.mp3",
+    if (!birthdayAudio) return;
+
+    birthdayAudio.play().catch(() => {
+      // Browser blocked autoplay — play on the very first touch/click/key
+      const unlock = () => {
+        birthdayAudio.play().catch(() => {});
+        ['click', 'touchstart', 'keydown'].forEach(evt =>
+          document.removeEventListener(evt, unlock, { capture: true })
+        );
+      };
+      ['click', 'touchstart', 'keydown'].forEach(evt =>
+        document.addEventListener(evt, unlock, { capture: true })
       );
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.35;
-    }
-    if (soundOn) audioRef.current.play().catch(() => {});
-    else audioRef.current.pause();
-  }, [soundOn]);
+    });
+  }, []);
 
   const triggerEasterEgg = () => {
     const next = easterCount + 1;
@@ -139,14 +159,6 @@ function BirthdayPage() {
         </div>
       )}
 
-      {/* Sound toggle */}
-      <button
-        onClick={() => setSoundOn((s) => !s)}
-        aria-label="Toggle ocean sound"
-        className="fixed top-5 right-5 z-40 w-12 h-12 rounded-full bg-linen/70 backdrop-blur-md border border-ocean/30 text-ocean-deep shadow-lg hover:scale-110 transition flex items-center justify-center"
-      >
-        {soundOn ? "🔊" : "🔈"}
-      </button>
 
       {/* Sun/moon easter egg */}
       <button
@@ -159,8 +171,8 @@ function BirthdayPage() {
       <Gallery />
       <Memories />
       <Letter />
-      <WishJar wishIndex={wishIndex} wishKey={wishKey} onOpen={openWish} />
-      <Footer />
+      <TulipGarden />
+      <FinalMessage />
     </main>
   );
 }
@@ -182,7 +194,7 @@ function Hero() {
           Hafsa <span className="text-5xl md:text-7xl">🌷</span>
         </h1>
         <p className="mt-8 font-[family-name:var(--font-serif)] text-lg md:text-2xl text-ink/80 max-w-xl mx-auto italic">
-          A little corner of the world, made just for you.
+          A small world I built for someone who means a lot to me.
         </p>
       </div>
 
@@ -196,7 +208,7 @@ function Hero() {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 text-linen/90 text-sm font-[family-name:var(--font-hand)] flex flex-col items-center">
-        <span>scroll, my love</span>
+        <span> scroll ↓</span>
         <span className="text-2xl" style={{ animation: "bounce-soft 2.4s ease-in-out infinite" }}>↓</span>
       </div>
     </section>
@@ -207,7 +219,7 @@ function Gallery() {
   const rotations = ["-rotate-3", "rotate-2", "-rotate-1", "rotate-3", "-rotate-2", "rotate-1"];
   return (
     <section className="relative py-28 px-6 bg-linen">
-      <SectionTitle eyebrow="our album" title="Moments with You" />
+      <SectionTitle eyebrow="a few " title="Moments with You" />
       <div className="mt-16 max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 reveal">
         {PHOTOS.map((p, i) => (
           <div key={i} className={`polaroid relative ${rotations[i % rotations.length]}`}>
@@ -236,7 +248,7 @@ function Gallery() {
 function Memories() {
   return (
     <section className="relative py-28 px-6 bg-gradient-to-b from-linen via-blush/20 to-linen">
-      <SectionTitle eyebrow="our scrapbook" title="Our Memories" />
+      <SectionTitle eyebrow="small moments" title="Things I'd never want to forget" />
       <div className="mt-20 max-w-4xl mx-auto relative">
         {/* timeline line */}
         <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-ocean/40 to-transparent md:-translate-x-1/2" />
@@ -283,7 +295,7 @@ function Letter() {
   ];
   return (
     <section className="relative py-28 px-6 bg-gradient-to-b from-linen to-ocean/10">
-      <SectionTitle eyebrow="just for you" title="A Letter to Her" />
+      <SectionTitle eyebrow="A letter" title="Just For You" />
       <div className="mt-16 max-w-3xl mx-auto reveal">
         <div className="linen-paper rounded-sm p-10 md:p-16 relative" style={{ transform: "rotate(-0.4deg)" }}>
           <div className="space-y-5 font-[family-name:var(--font-hand)] text-2xl md:text-3xl text-ink/85 leading-relaxed">
