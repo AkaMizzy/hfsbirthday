@@ -98,6 +98,8 @@ function BirthdayPage() {
   const [hearts, setHearts] = useState<number[]>([]);
   const [wishIndex, setWishIndex] = useState<number | null>(null);
   const [wishKey, setWishKey] = useState(0);
+  const [showMusicPopup, setShowMusicPopup] = useState(true);
+  const [musicPlaying, setMusicPlaying] = useState(false);
 
   // Scroll reveals
   useEffect(() => {
@@ -117,23 +119,16 @@ function BirthdayPage() {
     return () => io.disconnect();
   }, []);
 
-  // Auto-play birthday music: attempt immediately, unlock on first interaction if blocked
-  useEffect(() => {
+  const handlePlayMusic = () => {
     if (!birthdayAudio) return;
+    birthdayAudio.play().catch(() => {});
+    setMusicPlaying(true);
+    setShowMusicPopup(false);
+  };
 
-    birthdayAudio.play().catch(() => {
-      // Browser blocked autoplay — play on the very first touch/click/key
-      const unlock = () => {
-        birthdayAudio.play().catch(() => {});
-        ['click', 'touchstart', 'keydown'].forEach(evt =>
-          document.removeEventListener(evt, unlock, { capture: true })
-        );
-      };
-      ['click', 'touchstart', 'keydown'].forEach(evt =>
-        document.addEventListener(evt, unlock, { capture: true })
-      );
-    });
-  }, []);
+  const handleSkipMusic = () => {
+    setShowMusicPopup(false);
+  };
 
   const triggerEasterEgg = () => {
     const next = easterCount + 1;
@@ -155,6 +150,11 @@ function BirthdayPage() {
 
   return (
     <main className="relative overflow-x-hidden">
+      {/* Music welcome popup */}
+      {showMusicPopup && (
+        <MusicPopup onPlay={handlePlayMusic} onSkip={handleSkipMusic} />
+      )}
+
       {/* Floating petals overlay */}
       <Petals />
 
@@ -784,5 +784,137 @@ function Sparkles() {
         </span>
       ))}
     </>
+  );
+}
+
+/* ---------- Music Welcome Popup ---------- */
+function MusicPopup({ onPlay, onSkip }: { onPlay: () => void; onSkip: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{
+        background: "oklch(0.12 0.04 225 / 0.72)",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        animation: "fade-up 0.6s ease-out both",
+      }}
+    >
+      {/* Ambient floating petals inside popup */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        {[...Array(8)].map((_, i) => (
+          <span
+            key={i}
+            style={{
+              position: "absolute",
+              left: `${10 + i * 11}%`,
+              top: `${15 + (i % 3) * 20}%`,
+              fontSize: 18 + (i % 3) * 8,
+              opacity: 0.18,
+              animation: `float ${5 + i}s ease-in-out ${i * 0.6}s infinite`,
+              color: ["#f9a8d4","#93c5fd","#fde68a","#c4b5fd"][i % 4],
+            }}
+          >
+            {["🌷","✿","🌊","✦","❀","🌸","✧","🌺"][i]}
+          </span>
+        ))}
+      </div>
+
+      {/* Card */}
+      <div
+        className="relative mx-4 max-w-sm w-full rounded-3xl overflow-hidden"
+        style={{
+          background: "linear-gradient(145deg, oklch(0.97 0.02 85 / 0.12) 0%, oklch(0.74 0.06 215 / 0.18) 100%)",
+          border: "1px solid oklch(1 0 0 / 0.18)",
+          boxShadow: "0 40px 80px -20px oklch(0 0 0 / 0.55), inset 0 1px 0 oklch(1 0 0 / 0.2)",
+          animation: "note-unfold 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both",
+        }}
+      >
+        {/* Top gradient band */}
+        <div
+          style={{
+            height: 4,
+            background: "linear-gradient(90deg, oklch(0.87 0.06 20), oklch(0.83 0.11 80), oklch(0.74 0.06 215), oklch(0.82 0.07 305))",
+          }}
+        />
+
+        <div className="px-8 py-10 text-center">
+          {/* Music note icon */}
+          <div
+            className="mx-auto mb-5 w-16 h-16 rounded-full flex items-center justify-center text-3xl"
+            style={{
+              background: "linear-gradient(135deg, oklch(0.74 0.06 215 / 0.35), oklch(0.82 0.07 305 / 0.3))",
+              border: "1px solid oklch(1 0 0 / 0.2)",
+              boxShadow: "0 8px 24px oklch(0.74 0.06 215 / 0.4)",
+              animation: "float 4s ease-in-out infinite",
+            }}
+          >
+            🎵
+          </div>
+
+          <p
+            className="font-[family-name:var(--font-hand)] text-sm tracking-[0.3em] uppercase mb-2"
+            style={{ color: "oklch(0.83 0.11 80)", opacity: 0.9 }}
+          >
+            a little something
+          </p>
+
+          <h2
+            className="font-[family-name:var(--font-display)] text-4xl mb-1"
+            style={{
+              background: "linear-gradient(135deg, oklch(0.97 0.02 85), oklch(0.83 0.11 80))",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            Hi, Hafsa 🌷
+          </h2>
+
+          <p
+            className="font-[family-name:var(--font-serif)] italic text-base leading-relaxed mt-3 mb-8"
+            style={{ color: "oklch(0.92 0.02 85 / 0.85)" }}
+          >
+            I made something just for you —<br />
+            play the music & let it take you there.
+          </p>
+
+          {/* Play button */}
+          <button
+            id="music-play-btn"
+            onClick={onPlay}
+            className="group w-full py-4 rounded-2xl font-[family-name:var(--font-hand)] text-xl transition-all duration-300 mb-3"
+            style={{
+              background: "linear-gradient(135deg, oklch(0.74 0.06 215), oklch(0.55 0.08 225))",
+              color: "oklch(0.97 0.02 85)",
+              boxShadow: "0 8px 28px oklch(0.55 0.08 225 / 0.5)",
+              border: "1px solid oklch(1 0 0 / 0.15)",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px) scale(1.02)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 14px 36px oklch(0.55 0.08 225 / 0.65)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.transform = "";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 8px 28px oklch(0.55 0.08 225 / 0.5)";
+            }}
+          >
+            ▶ &nbsp;Play the Birthday Song
+          </button>
+
+          {/* Skip link */}
+          <button
+            id="music-skip-btn"
+            onClick={onSkip}
+            className="text-sm font-[family-name:var(--font-serif)] italic transition-opacity duration-200 hover:opacity-100"
+            style={{ color: "oklch(0.9 0.02 85 / 0.45)" }}
+          >
+            maybe later
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
