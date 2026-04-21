@@ -97,7 +97,7 @@ export function TulipGarden() {
           Wildflowers in bloom
         </h2>
         <p className="mt-4 text-sm tracking-widest uppercase text-muted-foreground">
-          hover or tap the tulips
+          tap the tulips let it fly
         </p>
       </div>
 

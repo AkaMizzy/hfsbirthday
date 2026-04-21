@@ -232,7 +232,7 @@ function Hero() {
         <p className="font-[family-name:var(--font-serif)] italic text-ocean-deep/80 tracking-[0.3em] uppercase text-xs md:text-sm mb-6">
           for my dearest Hafsa
         </p>
-        <h1 className="font-[family-name:var(--font-display)] text-6xl sm:text-7xl md:text-9xl leading-[1.1] shimmer-text drop-shadow-sm">
+        <h1 className="font-serif-display text-6xl sm:text-7xl md:text-9xl leading-[1.1] shimmer-text drop-shadow-sm">
           Happy Birthday,
           <br />
           Hafsa <span className="text-5xl md:text-7xl">🌷</span>
@@ -565,7 +565,7 @@ function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
       <p className="uppercase tracking-[0.4em] text-xs text-ocean-deep/60 font-[family-name:var(--font-serif)]">
         {eyebrow}
       </p>
-      <h2 className="mt-3 font-[family-name:var(--font-display)] text-5xl md:text-7xl text-ocean-deep">
+      <h2 className="mt-3 font-serif-display text-5xl md:text-7xl text-ocean-deep">
         {title}
       </h2>
       <div className="mx-auto mt-4 h-px w-24 bg-gradient-to-r from-transparent via-gold to-transparent" />
